@@ -1,1 +1,8 @@
-package taskmanager
+package main
+
+import "task_manager/router"
+
+func main() {
+	r := router.SetUpRoutes()
+	r.Run()
+}
