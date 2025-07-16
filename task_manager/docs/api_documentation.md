@@ -8,7 +8,7 @@
 
 ```json
 {
-  "id": 1,
+  "id": "64b3f13e8f1b2c0012345678",
   "title": "Complete assignment",
   "description": "Finish the Go task manager API",
   "due_date": "2025-08-01T00:00:00Z",
@@ -16,13 +16,13 @@
 }
 ```
 
-| Field       | Type   | Description                              |
-|-------------|--------|------------------------------------------|
-| `id`        | `int`  | Auto-generated ID of the task           |
-| `title`     | `string` | Title of the task                      |
-| `description` | `string` | Description of the task              |
-| `due_date`  | `string` | Due date in ISO 8601 format            |
-| `status`    | `string` | Status (e.g., `pending`, `completed`) |
+| Field       | Type     | Description                              |
+|-------------|----------|------------------------------------------|
+| `id`        | `string` | MongoDB ObjectID of the task            |
+| `title`     | `string` | Title of the task                       |
+| `description` | `string` | Description of the task               |
+| `due_date`  | `string` | Due date in ISO 8601 format             |
+| `status`    | `string` | Status (e.g., `pending`, `completed`)   |
 
 ---
 
@@ -42,7 +42,7 @@ GET /api/tasks/
 ```json
 [
   {
-    "id": 1,
+    "id": "64b3f13e8f1b2c0012345678",
     "title": "Complete assignment",
     "description": "Finish the Go task manager API",
     "due_date": "2025-08-01T00:00:00Z",
@@ -58,7 +58,7 @@ Retrieve details of a single task by ID.
 
 #### 🔸 Example Request:
 ```bash
-GET /api/tasks/1
+GET /api/tasks/64b3f13e8f1b2c0012345678
 ```
 
 #### 🔸 Success Response:
@@ -66,7 +66,7 @@ GET /api/tasks/1
 
 ```json
 {
-  "id": 1,
+  "id": "64b3f13e8f1b2c0012345678",
   "title": "Complete assignment",
   "description": "Finish the Go task manager API",
   "due_date": "2025-08-01T00:00:00Z",
@@ -109,7 +109,7 @@ Content-Type: application/json
 
 ```json
 {
-  "id": 2,
+  "id": "64b3f13e8f1b2c0012345679",
   "title": "New Task",
   "description": "This is a new task",
   "due_date": "2025-08-05T00:00:00Z",
@@ -124,7 +124,7 @@ Update an existing task.
 
 #### 🔸 Example Request:
 ```bash
-PUT /api/tasks/1
+PUT /api/tasks/64b3f13e8f1b2c0012345678
 Content-Type: application/json
 ```
 
@@ -143,7 +143,7 @@ Content-Type: application/json
 
 ```json
 {
-  "id": 1,
+  "id": "64b3f13e8f1b2c0012345678",
   "title": "Updated Task",
   "description": "Updated description",
   "due_date": "2025-08-10T00:00:00Z",
@@ -167,7 +167,7 @@ Delete a task by ID.
 
 #### 🔸 Example Request:
 ```bash
-DELETE /api/tasks/1
+DELETE /api/tasks/64b3f13e8f1b2c0012345678
 ```
 
 #### 🔸 Success Response:
@@ -200,7 +200,7 @@ DELETE /api/tasks/1
 ## 🧪 Testing Instructions (Postman or curl)
 
 - **GET** `/api/tasks/` → Returns all tasks.
-- **GET** `/api/tasks/1` → Returns task with ID `1`.
+- **GET** `/api/tasks/64b3f13e8f1b2c0012345678` → Returns task with the given MongoDB `ObjectID`.
 - **POST** `/api/tasks/` → Creates a task with a JSON body.
-- **PUT** `/api/tasks/1` → Updates task with ID `1`.
-- **DELETE** `/api/tasks/1` → Deletes task with ID `1`.
+- **PUT** `/api/tasks/64b3f13e8f1b2c0012345678` → Updates task with the given MongoDB `ObjectID`.
+- **DELETE** `/api/tasks/64b3f13e8f1b2c0012345678` → Deletes task with the given MongoDB `ObjectID`.

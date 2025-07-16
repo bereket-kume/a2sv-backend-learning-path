@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
 
 	"task_manager/data"
 	"task_manager/models"
@@ -11,15 +11,17 @@ import (
 )
 
 func GetAllTask(ctx *gin.Context) {
-	tasks := data.GetAlltask()
+	tasks, err := data.GetAlltask()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve tasks"})
+		return
+	}
+	fmt.Println(tasks)
 	ctx.JSON(http.StatusOK, tasks)
 }
 
 func GetTaskById(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid task ID"})
-	}
+	id := ctx.Param("id")
 	task, err := data.GetTaskById(id)
 
 	if err != nil {
@@ -36,16 +38,16 @@ func CreateTask(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	created := data.CreateTask(task)
+	created, err := data.CreateTask(task)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create task"})
+		return
+	}
 	ctx.JSON(http.StatusOK, created)
 }
 
 func UpdateTask(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	id := ctx.Param("id")
 	var task models.Task
 	if err := ctx.ShouldBind(&task); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -60,11 +62,7 @@ func UpdateTask(ctx *gin.Context) {
 }
 
 func DeleteTask(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid task ID"})
-		return
-	}
+	id := ctx.Param("id")
 	deleted := data.DeleteTask(id)
 	ctx.JSON(http.StatusOK, deleted)
 }
