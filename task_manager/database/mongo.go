@@ -13,6 +13,7 @@ import (
 )
 
 var TaskCollection *mongo.Collection
+var UserCollection *mongo.Collection
 
 func ConnectDB() {
 	err := godotenv.Load()
@@ -34,6 +35,7 @@ func ConnectDB() {
 		log.Fatal("mongodb connection error", err)
 	}
 	TaskCollection = client.Database("task").Collection("tasks")
+	UserCollection = client.Database("user").Collection("users")
 	fmt.Println("mongodb connected")
 
 }
