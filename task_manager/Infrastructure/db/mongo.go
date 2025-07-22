@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"context"
@@ -12,10 +12,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var TaskCollection *mongo.Collection
-var UserCollection *mongo.Collection
+type MongoDB struct {
+	Client *mongo.Client
+}
 
-func ConnectDB() {
+func ConnectDB() (*MongoDB, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -30,12 +31,14 @@ func ConnectDB() {
 	defer cancel()
 
 	client, err := mongo.Connect(ctx, clientOptions)
-
 	if err != nil {
-		log.Fatal("mongodb connection error", err)
+		return nil, fmt.Errorf("mongodb connection error: %v", err)
 	}
-	TaskCollection = client.Database("task").Collection("tasks")
-	UserCollection = client.Database("user").Collection("users")
-	fmt.Println("mongodb connected")
 
+	fmt.Println("mongodb connected")
+	return &MongoDB{Client: client}, nil
+}
+
+func (db *MongoDB) GetCollection(databaseName, collectionName string) *mongo.Collection {
+	return db.Client.Database(databaseName).Collection(collectionName)
 }
