@@ -1,9 +1,10 @@
 package routers
 
 import (
-	"github.com/gin-gonic/gin"
 	"task_manager/Delivery/controller"
-	"task_manager/Infrastructure"
+	infrastructure "task_manager/Infrastructure"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SetUpRoutes(userController *controller.UserController, taskController *controller.TaskController) *gin.Engine {
@@ -15,11 +16,12 @@ func SetUpRoutes(userController *controller.UserController, taskController *cont
 		{
 			users.POST("/register", userController.Register)
 			users.POST("/login", userController.Login)
-			users.POST("/promote/:id", Infrastructure.AuthMiddleware(), Infrastructure.Admin(), userController.Promote)
+			users.POST("/promote/:id", infrastructure.AuthMiddleware(), infrastructure.Admin(), userController.Promote)
+			users.GET(":username", infrastructure.AuthMiddleware(), userController.GetUserByUsername)
 		}
 
 		tasks := api.Group("/tasks")
-		tasks.Use(Infrastructure.AuthMiddleware())
+		tasks.Use(infrastructure.AuthMiddleware())
 		{
 			tasks.GET("/", taskController.GetAllTasks)
 			tasks.GET(":id", taskController.GetTaskById)

@@ -2,13 +2,14 @@ package main
 
 import (
 	"os"
-	"github.com/joho/godotenv"
-	"task_manager/Infrastructure/db"
-	"task_manager/Infrastructure"
-	"task_manager/Repositories"
-	"task_manager/Usecases"
 	"task_manager/Delivery/controller"
 	"task_manager/Delivery/routers"
+	infrastructure "task_manager/Infrastructure"
+	"task_manager/Infrastructure/db"
+	repositories "task_manager/Repositories"
+	usecases "task_manager/Usecases"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -24,18 +25,18 @@ func main() {
 	userCollection := mongo.GetCollection(dbName, userCol)
 	taskCollection := mongo.GetCollection(dbName, taskCol)
 
-	passwordService := Infrastructure.NewPasswordService()
+	passwordService := infrastructure.NewPasswordService()
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		jwtSecret = "secret123"
 	}
-	jwtService := Infrastructure.NewJWTService(jwtSecret)
+	jwtService := infrastructure.NewJWTService(jwtSecret)
 
-	userRepo := Repositories.NewUserRepository(userCollection)
-	taskRepo := Repositories.NewTaskRepository(taskCollection)
+	userRepo := repositories.NewUserRepository(userCollection)
+	taskRepo := repositories.NewTaskRepository(taskCollection)
 
-	userUsecase := Usecases.NewUserUseCase(userRepo, passwordService, jwtService)
-	taskUsecase := Usecases.NewTaskUseCase(taskRepo)
+	userUsecase := usecases.NewUserUseCase(userRepo, passwordService, jwtService)
+	taskUsecase := usecases.NewTaskUseCase(taskRepo)
 
 	userController := controller.NewUserController(userUsecase)
 	taskController := controller.NewTaskController(taskUsecase)

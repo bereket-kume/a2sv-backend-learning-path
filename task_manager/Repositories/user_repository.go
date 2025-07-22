@@ -38,8 +38,7 @@ func (r *UserRepositoryImpl) Register(user *domain.User) (*domain.User, error) {
 		user.Role = domain.RoleUser
 	}
 
-	hashedPassword, _ := r.PasswordService.HashPassword(user.Password)
-	user.Password = hashedPassword
+	// Password is already hashed in usecase
 
 	res, err := r.UserCollection.InsertOne(ctx, user)
 	if err != nil {

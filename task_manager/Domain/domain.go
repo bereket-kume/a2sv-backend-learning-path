@@ -23,7 +23,7 @@ type User struct {
 
 type UserRepository interface {
 	Register(user *User) (*User, error)
-	GetUserByUsername(input *User) (string, error)
+	GetUserByUsername(username string) (*User, error)
 	PromoteUser(id string) (*User, error)
 }
 

@@ -3,15 +3,16 @@ package usecases
 import (
 	"errors"
 	domain "task_manager/Domain"
+	infrastructure "task_manager/Infrastructure"
 )
 
 type UserUseCaseImpl struct {
 	UserRepo        domain.UserRepository
-	PasswordService domain.PasswordService
-	JWTService      domain.JWTService
+	PasswordService infrastructure.PasswordService
+	JWTService      infrastructure.JWTService
 }
 
-func NewUserUseCase(userRepo domain.UserRepository, passwordService domain.PasswordService, jwtService domain.JWTService) *UserUseCaseImpl {
+func NewUserUseCase(userRepo domain.UserRepository, passwordService infrastructure.PasswordService, jwtService infrastructure.JWTService) *UserUseCaseImpl {
 	return &UserUseCaseImpl{
 		UserRepo:        userRepo,
 		PasswordService: passwordService,

@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	domain "task_manager/Domain"
-	"task_manager/Usecases"
+	usecases "task_manager/Usecases"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
@@ -32,7 +33,7 @@ func (uc *UserController) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	createdUser, err := uc.UserUseCase.UserRepo.Register(&user)
+	createdUser, err := uc.UserUseCase.Register(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -54,9 +55,19 @@ func (uc *UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
+func (uc *UserController) GetUserByUsername(c *gin.Context) {
+	username := c.Param("username")
+	user, err := uc.UserUseCase.GetUserByUsername(username)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
 func (uc *UserController) Promote(c *gin.Context) {
 	id := c.Param("id")
-	user, err := uc.UserUseCase.UserRepo.PromoteUser(id)
+	user, err := uc.UserUseCase.PromoteUser(id)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
