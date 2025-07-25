@@ -4,30 +4,30 @@ import (
 	domain "task_manager/Domain"
 )
 
-type TaskUseCaseImpl struct {
+type TaskUseCase struct {
 	TaskRepo domain.TaskRepository
 }
 
-func NewTaskUseCase(taskRepo domain.TaskRepository) *TaskUseCaseImpl {
-	return &TaskUseCaseImpl{TaskRepo: taskRepo}
+func NewTaskUseCase(taskRepo domain.TaskRepository) *TaskUseCase {
+	return &TaskUseCase{TaskRepo: taskRepo}
 }
 
-func (u *TaskUseCaseImpl) GetAllTasks() ([]*domain.Task, error) {
+func (u *TaskUseCase) GetAllTasks() ([]*domain.Task, error) {
 	return u.TaskRepo.GetAlltask()
 }
 
-func (u *TaskUseCaseImpl) GetTaskById(id string) (*domain.Task, error) {
+func (u *TaskUseCase) GetTaskById(id string) (*domain.Task, error) {
 	return u.TaskRepo.GetTaskById(id)
 }
 
-func (u *TaskUseCaseImpl) CreateTask(task *domain.Task) (*domain.Task, error) {
+func (u *TaskUseCase) CreateTask(task *domain.Task) (*domain.Task, error) {
 	return u.TaskRepo.CreateTask(task)
 }
 
-func (u *TaskUseCaseImpl) UpdateTask(id string, updated *domain.Task) (*domain.Task, error) {
+func (u *TaskUseCase) UpdateTask(id string, updated *domain.Task) (*domain.Task, error) {
 	return u.TaskRepo.UpdateTask(id, updated)
 }
 
-func (u *TaskUseCaseImpl) DeleteTask(id string) error {
+func (u *TaskUseCase) DeleteTask(id string) error {
 	return u.TaskRepo.DeleteTask(id)
 }

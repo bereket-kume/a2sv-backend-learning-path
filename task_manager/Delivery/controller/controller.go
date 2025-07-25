@@ -11,18 +11,18 @@ import (
 )
 
 type UserController struct {
-	UserUseCase *usecases.UserUseCaseImpl
+	UserUseCase *usecases.UserUseCase
 }
 
 type TaskController struct {
-	TaskUseCase *usecases.TaskUseCaseImpl
+	TaskUseCase *usecases.TaskUseCase
 }
 
-func NewUserController(userUseCase *usecases.UserUseCaseImpl) *UserController {
+func NewUserController(userUseCase *usecases.UserUseCase) *UserController {
 	return &UserController{UserUseCase: userUseCase}
 }
 
-func NewTaskController(taskUseCase *usecases.TaskUseCaseImpl) *TaskController {
+func NewTaskController(taskUseCase *usecases.TaskUseCase) *TaskController {
 	return &TaskController{TaskUseCase: taskUseCase}
 }
 
