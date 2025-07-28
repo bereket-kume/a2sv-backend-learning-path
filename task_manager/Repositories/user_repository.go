@@ -13,21 +13,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type UserRepositoryImpl struct {
+type UserRepository struct {
 	UserCollection  *mongo.Collection
 	PasswordService infrastructure.PasswordService
 	JWTService      infrastructure.JWTService
 }
 
-func NewUserRepository(db *mongo.Collection) *UserRepositoryImpl {
-	return &UserRepositoryImpl{UserCollection: db}
+func NewUserRepository(db *mongo.Collection) *UserRepository {
+	return &UserRepository{UserCollection: db}
 }
 
-func (r *UserRepositoryImpl) Register(user *domain.User) (*domain.User, error) {
+func (r *UserRepository) Register(user *domain.User) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	count, err := r.UserCollection.CountDocuments(ctx, primitive.M{})
+	count, err := r.UserCollection.CountDocuments(ctx, bson.M{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to check user collection: %w", err)
 	}
@@ -38,15 +38,19 @@ func (r *UserRepositoryImpl) Register(user *domain.User) (*domain.User, error) {
 		user.Role = domain.RoleUser
 	}
 
-	// Password is already hashed in usecase
+	hashedPassword, err := r.PasswordService.HashPassword(user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+	user.Password = hashedPassword
 
 	res, err := r.UserCollection.InsertOne(ctx, user)
 	if err != nil {
-		return nil, errors.New("user registration failed")
+		return nil, fmt.Errorf("user registration failed: %w", err)
 	}
 
 	if objId, ok := res.InsertedID.(primitive.ObjectID); ok {
-		user.ID = objId
+		user.ID = objId.Hex()
 	} else {
 		return nil, errors.New("failed to retrieve inserted ID")
 	}
@@ -54,12 +58,12 @@ func (r *UserRepositoryImpl) Register(user *domain.User) (*domain.User, error) {
 	return user, nil
 }
 
-func (r *UserRepositoryImpl) GetUserByUsername(username string) (*domain.User, error) {
+func (r *UserRepository) GetUserByUsername(username string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var user domain.User
-	err := r.UserCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	err := r.UserCollection.FindOne(ctx, bson.M{"name": username}).Decode(&user)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
@@ -67,7 +71,7 @@ func (r *UserRepositoryImpl) GetUserByUsername(username string) (*domain.User, e
 	return &user, nil
 }
 
-func (r *UserRepositoryImpl) PromoteUser(id string) (*domain.User, error) {
+func (r *UserRepository) PromoteUser(id string) (*domain.User, error) {
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, errors.New("invalid ObjectId format")
@@ -76,11 +80,9 @@ func (r *UserRepositoryImpl) PromoteUser(id string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	update := bson.M{"$set": bson.M{
-		"role": domain.RoleAdmin,
-	}}
-
-	res, err := r.UserCollection.UpdateByID(ctx, objId, update)
+	filter := bson.M{"_id": objId}
+	update := bson.M{"$set": bson.M{"role": domain.RoleAdmin}}
+	res, err := r.UserCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, fmt.Errorf("failed to promote user: %w", err)
 	}
@@ -90,7 +92,7 @@ func (r *UserRepositoryImpl) PromoteUser(id string) (*domain.User, error) {
 	}
 
 	var updatedUser domain.User
-	err = r.UserCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&updatedUser)
+	err = r.UserCollection.FindOne(ctx, filter).Decode(&updatedUser)
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve updated user: %w", err)
 	}

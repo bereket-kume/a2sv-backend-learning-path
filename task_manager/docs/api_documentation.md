@@ -323,3 +323,42 @@ Authorization: Bearer <user-token>
 - **POST** `/api/users/login` → Logs in a user and returns a JWT token.
 - **GET** `/api/users/:username` → Returns user details by username (requires valid JWT token).
 - **POST** `/api/users/promote/:id` → Promotes a user to admin (requires admin token).
+
+---
+
+## 🧪 Automated Testing Instructions
+
+### Running Tests
+To ensure the API behaves as expected, automated tests are included in the project. Follow these steps to run the tests:
+
+1. **Install Dependencies**:
+   Ensure all dependencies are installed:
+   ```bash
+   go mod tidy
+   ```
+
+2. **Run Tests**:
+   Execute all tests using the following command:
+   ```bash
+   go test ./... -v
+   ```
+
+3. **Expected Output**:
+   If all tests pass, you should see output similar to:
+   ```bash
+   === RUN   TestSetUpRoutes
+   --- PASS: TestSetUpRoutes (0.50s)
+   === RUN   TestUserRepository
+   --- PASS: TestUserRepository (0.30s)
+   PASS
+   ok      task_manager/Delivery/routers   0.80s
+   ```
+
+4. **Test Coverage**:
+   To check test coverage, run:
+   ```bash
+   go test ./... -cover
+   ```
+
+5. **Debugging Failures**:
+   If a test fails, review the error message and stack trace in the output to identify the issue.

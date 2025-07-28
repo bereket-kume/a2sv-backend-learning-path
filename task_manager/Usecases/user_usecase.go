@@ -6,21 +6,21 @@ import (
 	infrastructure "task_manager/Infrastructure"
 )
 
-type UserUseCaseImpl struct {
+type UserUseCase struct {
 	UserRepo        domain.UserRepository
 	PasswordService infrastructure.PasswordService
 	JWTService      infrastructure.JWTService
 }
 
-func NewUserUseCase(userRepo domain.UserRepository, passwordService infrastructure.PasswordService, jwtService infrastructure.JWTService) *UserUseCaseImpl {
-	return &UserUseCaseImpl{
+func NewUserUseCase(userRepo domain.UserRepository, passwordService infrastructure.PasswordService, jwtService infrastructure.JWTService) *UserUseCase {
+	return &UserUseCase{
 		UserRepo:        userRepo,
 		PasswordService: passwordService,
 		JWTService:      jwtService,
 	}
 }
 
-func (u *UserUseCaseImpl) Login(input *domain.User) (string, error) {
+func (u *UserUseCase) Login(input *domain.User) (string, error) {
 	user, err := u.UserRepo.GetUserByUsername(input.Name)
 	if err != nil {
 		return "", errors.New("user not found")
@@ -36,7 +36,7 @@ func (u *UserUseCaseImpl) Login(input *domain.User) (string, error) {
 	return token, nil
 }
 
-func (u *UserUseCaseImpl) Register(input *domain.User) (*domain.User, error) {
+func (u *UserUseCase) Register(input *domain.User) (*domain.User, error) {
 	hashedPassword, err := u.PasswordService.HashPassword(input.Password)
 	if err != nil {
 		return nil, errors.New("failed to hash password")
@@ -49,10 +49,10 @@ func (u *UserUseCaseImpl) Register(input *domain.User) (*domain.User, error) {
 	return createdUser, nil
 }
 
-func (u *UserUseCaseImpl) GetUserByUsername(username string) (*domain.User, error) {
+func (u *UserUseCase) GetUserByUsername(username string) (*domain.User, error) {
 	return u.UserRepo.GetUserByUsername(username)
 }
 
-func (u *UserUseCaseImpl) PromoteUser(id string) (*domain.User, error) {
+func (u *UserUseCase) PromoteUser(id string) (*domain.User, error) {
 	return u.UserRepo.PromoteUser(id)
 }

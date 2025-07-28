@@ -3,22 +3,23 @@ package repositories
 import (
 	"context"
 	"errors"
-	"time"
 	domain "task_manager/Domain"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type TaskRepositoryImpl struct {
+type TaskRepository struct {
 	TaskCollection *mongo.Collection
 }
 
-func NewTaskRepository(db *mongo.Collection) *TaskRepositoryImpl {
-	return &TaskRepositoryImpl{TaskCollection: db}
+func NewTaskRepository(db *mongo.Collection) *TaskRepository {
+	return &TaskRepository{TaskCollection: db}
 }
 
-func (r *TaskRepositoryImpl) GetAlltask() ([]*domain.Task, error) {
+func (r *TaskRepository) GetAlltask() ([]*domain.Task, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cursor, err := r.TaskCollection.Find(ctx, bson.M{})
@@ -32,7 +33,7 @@ func (r *TaskRepositoryImpl) GetAlltask() ([]*domain.Task, error) {
 	return tasks, nil
 }
 
-func (r *TaskRepositoryImpl) GetTaskById(id string) (*domain.Task, error) {
+func (r *TaskRepository) GetTaskById(id string) (*domain.Task, error) {
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, errors.New("invalid ObjectId format")
@@ -47,7 +48,7 @@ func (r *TaskRepositoryImpl) GetTaskById(id string) (*domain.Task, error) {
 	return &task, nil
 }
 
-func (r *TaskRepositoryImpl) CreateTask(task *domain.Task) (*domain.Task, error) {
+func (r *TaskRepository) CreateTask(task *domain.Task) (*domain.Task, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	res, err := r.TaskCollection.InsertOne(ctx, task)
@@ -55,14 +56,14 @@ func (r *TaskRepositoryImpl) CreateTask(task *domain.Task) (*domain.Task, error)
 		return nil, err
 	}
 	if objId, ok := res.InsertedID.(primitive.ObjectID); ok {
-		task.ID = objId
+		task.ID = objId.Hex()
 	} else {
 		return nil, errors.New("failed to retrieve inserted ID")
 	}
 	return task, nil
 }
 
-func (r *TaskRepositoryImpl) UpdateTask(id string, updated *domain.Task) (*domain.Task, error) {
+func (r *TaskRepository) UpdateTask(id string, updated *domain.Task) (*domain.Task, error) {
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, errors.New("invalid ObjectId format")
@@ -87,7 +88,7 @@ func (r *TaskRepositoryImpl) UpdateTask(id string, updated *domain.Task) (*domai
 	return &task, nil
 }
 
-func (r *TaskRepositoryImpl) DeleteTask(id string) error {
+func (r *TaskRepository) DeleteTask(id string) error {
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return errors.New("invalid ObjectId format")

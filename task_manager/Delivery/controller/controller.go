@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"task_manager/Delivery/controller/dto"
 	domain "task_manager/Domain"
 	usecases "task_manager/Usecases"
 
@@ -11,14 +12,14 @@ import (
 )
 
 type UserController struct {
-	UserUseCase *usecases.UserUseCase
+	UserUseCase domain.UserUseCaseInterface
 }
 
 type TaskController struct {
 	TaskUseCase *usecases.TaskUseCase
 }
 
-func NewUserController(userUseCase *usecases.UserUseCase) *UserController {
+func NewUserController(userUseCase domain.UserUseCaseInterface) *UserController {
 	return &UserController{UserUseCase: userUseCase}
 }
 
@@ -28,10 +29,15 @@ func NewTaskController(taskUseCase *usecases.TaskUseCase) *TaskController {
 
 // User Handlers
 func (uc *UserController) Register(c *gin.Context) {
-	var user domain.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var userDto dto.UserDto
+	if err := c.ShouldBindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+	user := domain.User{
+		Name:     userDto.Name,
+		Password: userDto.Password,
+		Role:     userDto.Role,
 	}
 	createdUser, err := uc.UserUseCase.Register(&user)
 	if err != nil {
@@ -42,11 +48,16 @@ func (uc *UserController) Register(c *gin.Context) {
 }
 
 func (uc *UserController) Login(c *gin.Context) {
-	var user domain.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var userDto dto.UserDto
+	if err := c.ShouldBindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	user := domain.User{
+		Name:     userDto.Name,
+		Password: userDto.Password,
+	}
+
 	token, err := uc.UserUseCase.Login(&user)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -96,13 +107,13 @@ func (tc *TaskController) GetTaskById(c *gin.Context) {
 }
 
 func (tc *TaskController) CreateTask(c *gin.Context) {
-	var task domain.Task
-	if err := c.ShouldBindJSON(&task); err != nil {
+	var taskDto dto.TaskDto
+	if err := c.ShouldBindJSON(&taskDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	task := domain.Task{}
 	if task.DueDate.IsZero() {
-		// Parse due_date from string if provided
 		if dueDateStr, ok := c.GetPostForm("due_date"); ok {
 			dueDate, err := time.Parse(time.RFC3339, dueDateStr)
 			if err == nil {
