@@ -2,6 +2,7 @@ package usecases
 
 import (
 	domain "task_manager/Domain"
+	usecases "task_manager/Usecases"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -60,14 +61,14 @@ type UserUseCaseTestSuite struct {
 	UserRepoMock        *UserRepositoryMock
 	PasswordServiceMock *PasswordServiceMock
 	JWTServiceMock      *JWTServiceMock
-	UserUseCase         *UserUseCase
+	UserUseCase         *usecases.UserUseCase
 }
 
 func (suite *UserUseCaseTestSuite) SetupTest() {
 	suite.UserRepoMock = new(UserRepositoryMock)
 	suite.PasswordServiceMock = new(PasswordServiceMock)
 	suite.JWTServiceMock = new(JWTServiceMock)
-	suite.UserUseCase = NewUserUseCase(suite.UserRepoMock, suite.PasswordServiceMock, suite.JWTServiceMock)
+	suite.UserUseCase = usecases.NewUserUseCase(suite.UserRepoMock, suite.PasswordServiceMock, suite.JWTServiceMock)
 }
 
 func (suite *UserUseCaseTestSuite) TestRegister() {

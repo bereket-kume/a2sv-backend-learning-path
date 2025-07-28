@@ -2,6 +2,7 @@ package usecases
 
 import (
 	domain "task_manager/Domain"
+	usecases "task_manager/Usecases"
 	"testing"
 	"time"
 
@@ -40,13 +41,13 @@ func (m *TaskRepositoryMock) DeleteTask(id string) error {
 
 type TaskUseCaseTestSuite struct {
 	suite.Suite
-	TaskUseCase  *TaskUseCase
+	TaskUseCase  *usecases.TaskUseCase
 	TaskRepoMock *TaskRepositoryMock
 }
 
 func (suite *TaskUseCaseTestSuite) SetupTest() {
 	suite.TaskRepoMock = new(TaskRepositoryMock)
-	suite.TaskUseCase = NewTaskUseCase(suite.TaskRepoMock)
+	suite.TaskUseCase = usecases.NewTaskUseCase(suite.TaskRepoMock)
 }
 
 func (suite *TaskUseCaseTestSuite) TestGetAllTasks() {

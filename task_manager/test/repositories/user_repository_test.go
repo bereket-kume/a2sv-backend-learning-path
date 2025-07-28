@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	domain "task_manager/Domain"
+	repositories "task_manager/Repositories"
 	"testing"
 	"time"
 
@@ -32,7 +33,7 @@ type UserRepositoryTestSuite struct {
 	UserCollection *mongo.Collection
 	Database       *mongo.Database
 	client         *mongo.Client
-	Repository     *UserRepository
+	Repository     *repositories.UserRepository
 }
 
 func (suite *UserRepositoryTestSuite) SetupTest() {
@@ -53,7 +54,7 @@ func (suite *UserRepositoryTestSuite) SetupTest() {
 	suite.NoError(err)
 
 	mockPasswordService := &MockPasswordService{}
-	suite.Repository = &UserRepository{
+	suite.Repository = &repositories.UserRepository{
 		UserCollection:  suite.UserCollection,
 		PasswordService: mockPasswordService,
 	}

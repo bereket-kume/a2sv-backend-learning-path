@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	domain "task_manager/Domain"
+	repositories "task_manager/Repositories"
 	"testing"
 	"time"
 
@@ -18,7 +19,7 @@ type TaskRepositoryTestSuite struct {
 	Client         *mongo.Client
 	Database       *mongo.Database
 	TaskCollection *mongo.Collection
-	Repository     *TaskRepository
+	Repository     *repositories.TaskRepository
 }
 
 func (suite *TaskRepositoryTestSuite) SetupTest() {
@@ -33,7 +34,7 @@ func (suite *TaskRepositoryTestSuite) SetupTest() {
 	suite.Client = client
 	suite.Database = client.Database("task_manager_test")
 	suite.TaskCollection = suite.Database.Collection("tasks")
-	suite.Repository = NewTaskRepository(suite.TaskCollection)
+	suite.Repository = repositories.NewTaskRepository(suite.TaskCollection)
 
 }
 
